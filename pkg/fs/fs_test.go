@@ -1,4 +1,4 @@
-package main
+package fs
 
 import (
 	"bytes"
@@ -22,7 +22,7 @@ func TestLinkPaths(t *testing.T) {
 	td, err := os.MkdirTemp("", "link_dir")
 	defer os.RemoveAll(td)
 	linkPath := filepath.Join(td, "link")
-	err = linkPaths(tf.Name(), linkPath)
+	err = LinkPaths(tf.Name(), linkPath)
 	defer os.Remove(linkPath)
 	if err != nil {
 		t.Fatal(err)
@@ -53,14 +53,14 @@ func TestLinkIfAlreadyLinked(t *testing.T) {
 	td, err := os.MkdirTemp("", "link_dir")
 	defer os.RemoveAll(td)
 	linkPath := filepath.Join(td, "link")
-	err = linkPaths(tf.Name(), linkPath)
+	err = LinkPaths(tf.Name(), linkPath)
 	defer os.Remove(linkPath)
 	if err != nil {
 		t.Fatal(err)
 		return
 	}
 	//run the  link again
-	err = linkPaths(tf.Name(), linkPath)
+	err = LinkPaths(tf.Name(), linkPath)
 	if err != nil {
 		t.Fatal(err)
 		return
@@ -82,7 +82,7 @@ func TestDirectoryLink(t *testing.T) {
 	link, err := os.MkdirTemp("", "link_dir")
 	defer os.RemoveAll(link)
 	// try to symlink it to another location
-	err = linkPaths(target, link)
+	err = LinkPaths(target, link)
 	if err != nil {
 		t.Fatal(err)
 		return
@@ -136,7 +136,7 @@ func TestCopyRecursively(t *testing.T) {
 		}
 		filePaths = append(filePaths, f.Name())
 	}
-	err = copyRecursively(src, dest)
+	err = CopyRecursively(src, dest)
 	if err != nil {
 		t.Fatal(err.Error())
 		return
@@ -168,7 +168,7 @@ func TestPathsAreEquivalent(t *testing.T) {
 	td, err := os.MkdirTemp("", "link_dir")
 	defer os.RemoveAll(td)
 	linkPath := filepath.Join(td, "link")
-	err = linkPaths(tf.Name(), linkPath)
+	err = LinkPaths(tf.Name(), linkPath)
 	defer os.Remove(linkPath)
 
 	if err != nil {

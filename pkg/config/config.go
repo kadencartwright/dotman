@@ -1,9 +1,11 @@
-package main
+package config
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 
+	"github.com/kadencartwright/dotman/pkg/fs"
 	"github.com/pelletier/go-toml/v2"
 )
 
@@ -22,7 +24,7 @@ func (cfg *Config) Link() []error {
 	errs := []error{}
 	err := os.Chdir(cfg.BaseDirectory)
 	if err != nil {
-		errs = append(errs)
+		errs = append(errs, err)
 	}
 	for _, pm := range cfg.PathMappings {
 		err = pm.BackupHost()
@@ -45,7 +47,7 @@ func (cfg *Config) Copy() []error {
 	errs := []error{}
 	err := os.Chdir(cfg.BaseDirectory)
 	if err != nil {
-		errs = append(errs)
+		errs = append(errs, err)
 	}
 	for _, pm := range cfg.PathMappings {
 		err := pm.CopyRecursively()
@@ -65,16 +67,16 @@ func (pm *PathMapping) LinkPaths() error {
 	if err != nil {
 		return err
 	}
-    hd,err:= os.UserHomeDir()
+	hd, err := os.UserHomeDir()
 	qr := filepath.Join(wd, pm.RepoPath)
 	qh := filepath.Join(hd, pm.HostPath)
-	return linkPaths(qr, qh)
+	return fs.LinkPaths(qr, qh)
 }
 func (pm *PathMapping) BackupHost() error {
-	return backup(pm.HostPath)
+	return fs.Backup(pm.HostPath)
 }
 func (pm *PathMapping) CopyRecursively() error {
-	return copyRecursively(pm.HostPath, pm.RepoPath)
+	return fs.CopyRecursively(pm.HostPath, pm.RepoPath)
 }
 func NewConfigFromFile(path string) (*Config, error) {
 	wd, err := os.Getwd()

@@ -1,4 +1,4 @@
-package main
+package fs
 
 import (
 	"errors"
@@ -8,19 +8,26 @@ import (
 	"path/filepath"
 )
 
-func linkPaths(source, destination string) error {
+func makeParentDirRecursive(path string) error {
+	parentDir := filepath.Dir(path)
+	cmd := exec.Command("mkdir", "-p", parentDir)
+	err := cmd.Run()
+	return err
+}
+func LinkPaths(source, destination string) error {
 	if pathsAreEquivalent(source, destination) {
 		return nil
 	}
-	err := os.Symlink(source, destination)
+	err := makeParentDirRecursive(destination)
+	err = os.Symlink(source, destination)
 	if os.IsExist(err) {
 		os.RemoveAll(destination)
-		return linkPaths(source, destination)
+		return LinkPaths(source, destination)
 	}
 	return err
 }
-func backup(path string) error {
-    cd,err:=os.UserCacheDir()
+func Backup(path string) error {
+	cd, err := os.UserCacheDir()
 	if err != nil {
 		return err
 	}
@@ -33,7 +40,7 @@ func backup(path string) error {
 	return nil
 }
 
-func copyRecursively(source, destination string) error {
+func CopyRecursively(source, destination string) error {
 	//if both paths point to same location, return nil
 	if pathsAreEquivalent(source, destination) {
 		return nil

@@ -4,3 +4,5 @@ run: build
 	./bin/dotman
 install: build
 	sudo cp ./bin/dotman /usr/bin/
+test: 
+	go test -v ./...	
